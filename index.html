@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cost Estimator: Claude vs. Gemini</title>
+    <title>Fivetran "Cursor for Data" Cost Estimator: Claude vs. Gemini</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -110,14 +110,14 @@
                             </button>
                         </div>
 
-                        <!-- PT Specific Controls (Only visible when PT is selected) -->
+                        <!-- PT Specific Controls -->
                         <div id="ptControls" class="hidden space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
                             <div>
                                 <label class="block text-xs font-bold text-slate-600 uppercase mb-1">Commitment Duration</label>
                                 <select id="ptCommitment" onchange="calculate()" class="block w-full rounded-lg border border-slate-200 text-xs font-medium py-2 px-3 focus:ring-googleBlue focus:border-googleBlue bg-white text-slate-800">
-                                    <option value="1w">1-Week Commit ($1,200/GSU/wk)</option>
-                                    <option value="1m" selected>1-Month Commit ($2,700/GSU/mo)</option>
-                                    <option value="3m">3-Month Commit ($2,400/GSU/mo)</option>
+                                    <option value="1w">1-Week Commitment (Reserved)</option>
+                                    <option value="1m" selected>1-Month Commitment (Saves ~10%)</option>
+                                    <option value="3m">3-Month Commitment (Saves ~20%)</option>
                                 </select>
                             </div>
 
@@ -165,15 +165,15 @@
                     <ul class="text-xs space-y-3 text-indigo-200 font-medium">
                         <li class="flex items-start">
                             <span class="text-emerald-400 mr-2">✓</span>
-                            <span><strong>Monthly Deterministic Spend:</strong> Provisioned Throughput guarantees pricing ceilings.</span>
+                            <span><strong>Deterministic GenAI Spend:</strong> GSU billing creates robust budget caps.</span>
                         </li>
                         <li class="flex items-start">
                             <span class="text-emerald-400 mr-2">✓</span>
-                            <span><strong>Context Caching:</strong> Save up to 75% on repeated developer context prompts.</span>
+                            <span><strong>Deep Caching Discounts:</strong> Save up to 90% on repeated database schemas.</span>
                         </li>
                         <li class="flex items-start">
                             <span class="text-emerald-400 mr-2">✓</span>
-                            <span><strong>Zero Rate Limits:</strong> GSU reservations guarantee immediate compute availability.</span>
+                            <span><strong>SLA-Backed Throughput:</strong> GSU allocations route around congestion.</span>
                         </li>
                     </ul>
                 </div>
@@ -190,32 +190,25 @@
                     <div>
                         <h4 class="font-bold text-emerald-900 text-sm">Fivetran Estimated Monthly Savings</h4>
                         <p class="text-sm text-emerald-700" id="savingsDescription">
-                            Using Gemini 3 Flash over Claude 3 Haiku saves you <strong id="savingsCalculated">$0.00</strong> monthly!
+                            Using Gemini Flash over Claude Haiku saves Fivetran monthly!
                         </p>
                     </div>
                 </div>
 
-                <!-- Live Model Comparison Matrix -->
+                <!-- Live Side-by-Side Model Comparison Matrix -->
                 <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 overflow-hidden">
                     <div class="flex justify-between items-center border-b border-slate-100 pb-4 mb-6">
-                        <h3 class="text-lg font-bold text-slate-900">Monthly Side-by-Side Analysis Matrix</h3>
-                        <span class="text-xs text-slate-400 font-medium">Auto-calculates on change</span>
+                        <h3 class="text-lg font-bold text-slate-900">Side-by-Side Architectural Mapping</h3>
+                        <span class="text-xs text-slate-400 font-medium">Monthly rates (Std vs. Disc)</span>
                     </div>
 
                     <div class="overflow-x-auto">
-                        <table class="min-w-full text-sm text-left border-collapse">
+                        <table class="min-w-full text-sm text-left">
                             <thead class="bg-slate-100 text-slate-600 font-semibold text-xs uppercase tracking-wider">
                                 <tr>
-                                    <th class="px-4 py-3 rounded-l-lg text-center bg-blue-50/50 text-googleBlue font-bold" colspan="3">Google Gemini Stack</th>
-                                    <th class="px-4 py-3 border-l border-slate-200 text-center bg-amber-50/50 text-anthropicOrange font-bold rounded-r-lg" colspan="3">Anthropic Claude Stack</th>
-                                </tr>
-                                <tr class="bg-slate-50 text-[10px] text-slate-500 border-t border-slate-200">
-                                    <th class="px-4 py-2">Model & Plan</th>
-                                    <th class="px-4 py-2 text-right">Standard</th>
-                                    <th class="px-4 py-2 text-right text-googleBlue">Discounted</th>
-                                    <th class="px-4 py-2 border-l border-slate-200">Model & Plan</th>
-                                    <th class="px-4 py-2 text-right">Standard</th>
-                                    <th class="px-4 py-2 text-right text-anthropicOrange">Discounted</th>
+                                    <th class="px-4 py-3 rounded-l-lg">Google Gemini Stack</th>
+                                    <th class="px-4 py-3 text-center border-x border-slate-200">Comparison Result</th>
+                                    <th class="px-4 py-3 rounded-r-lg">Anthropic Claude Stack (PAYGO)</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100" id="matrixBody">
@@ -236,18 +229,18 @@
                         <div class="space-y-4">
                             <div class="flex justify-between items-end">
                                 <div>
-                                    <div class="text-xs text-slate-400 uppercase font-semibold">Gemini 3.1 Pro Total</div>
+                                    <div class="text-xs text-slate-400 uppercase font-semibold">Gemini 3.1 Pro</div>
                                     <div class="text-2xl font-bold text-slate-900 mt-1" id="geminiProTotal">$0.00</div>
                                 </div>
                                 <div class="text-right">
-                                    <div class="text-[10px] text-slate-400 uppercase font-bold">Gemini 3 Flash Total</div>
+                                    <div class="text-[10px] text-slate-400 uppercase font-bold font-semibold">Gemini 3.5 Flash</div>
                                     <div class="text-xl font-bold text-googleGreen mt-0.5" id="geminiFlashTotal">$0.00</div>
                                 </div>
                             </div>
                             <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
                                 <div class="bg-googleBlue h-full rounded-full" id="googleRatioBar" style="width: 50%"></div>
                             </div>
-                            <p class="text-xs text-slate-500 italic">Optimized for high-volume cursor telemetry & lightning-fast code generation.</p>
+                            <p class="text-xs text-slate-500 italic">Highly optimized for cursor indexing and real-time auto-completion prompts.</p>
                         </div>
                     </div>
 
@@ -260,18 +253,18 @@
                         <div class="space-y-4">
                             <div class="flex justify-between items-end">
                                 <div>
-                                    <div class="text-xs text-slate-400 uppercase font-semibold">Claude 3.5 Sonnet Total</div>
+                                    <div class="text-xs text-slate-400 uppercase font-semibold">Claude 3.5 Sonnet</div>
                                     <div class="text-2xl font-bold text-slate-900 mt-1" id="claudeSonnetTotal">$0.00</div>
                                 </div>
                                 <div class="text-right">
-                                    <div class="text-[10px] text-slate-400 uppercase font-bold">Claude 3 Haiku Total</div>
+                                    <div class="text-[10px] text-slate-400 uppercase font-semibold font-bold">Claude 3.5 Haiku</div>
                                     <div class="text-xl font-bold text-amber-700 mt-0.5" id="claudeHaikuTotal">$0.00</div>
                                 </div>
                             </div>
                             <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
                                 <div class="bg-anthropicOrange h-full rounded-full" id="anthropicRatioBar" style="width: 50%"></div>
                             </div>
-                            <p class="text-xs text-slate-500 italic font-medium">Claude models calculated purely on Pay-As-You-Go standard APIs.</p>
+                            <p class="text-xs text-slate-500 italic font-medium">Claude calculated strictly on standard pay-as-you-go pricing loops.</p>
                         </div>
                     </div>
                 </div>
@@ -285,14 +278,17 @@
                         <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-800 pb-4">
                             <div>
                                 <h4 class="font-extrabold text-base tracking-wide uppercase text-indigo-400">Isolated Workload Simulation</h4>
-                                <p class="text-xs text-slate-400">Detailed monthly workload breakdown of your selected model structure</p>
+                                <p class="text-xs text-slate-400">Detailed monthly breakdown of your selected model structure</p>
                             </div>
                             <div class="mt-2 md:mt-0">
                                 <select id="selectedSimulatorModel" onchange="calculate()" class="bg-slate-900 border border-slate-800 text-white text-sm font-semibold rounded-lg px-4 py-2 focus:ring-googleBlue focus:border-googleBlue block">
-                                    <option value="gemini_3_flash">Gemini 3 Flash</option>
                                     <option value="gemini_3_1_pro" selected>Gemini 3.1 Pro</option>
+                                    <option value="gemini_3_5_flash">Gemini 3.5 Flash</option>
+                                    <option value="gemini_3_flash">Gemini 3 Flash</option>
+                                    <option value="gemini_3_1_flash_lite">Gemini 3.1 Flash-Lite</option>
                                     <option value="claude_sonnet">Claude 3.5 Sonnet</option>
-                                    <option value="claude_haiku">Claude 3 Haiku</option>
+                                    <option value="claude_haiku_3_5">Claude 3.5 Haiku</option>
+                                    <option value="claude_haiku_3">Claude 3 Haiku</option>
                                 </select>
                             </div>
                         </div>
@@ -326,20 +322,48 @@
     <script>
         let geminiMode = 'paygo'; // 'paygo' or 'pt'
 
+        // Central Rates Configuration (Standardized per 1 Million tokens)
         const models = {
-            'gemini_3_flash': {
-                name: 'Gemini 3 Flash',
-                provider: 'google',
-                inputPrice: 0.50,
-                outputPrice: 3.00,
-                badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-200'
-            },
             'gemini_3_1_pro': {
                 name: 'Gemini 3.1 Pro',
                 provider: 'google',
                 inputPrice: 2.00,
                 outputPrice: 12.00,
+                // Provisioned Throughput cost schedules (GSU/mo equivalent basis)
+                gsuPriceWeekly: 1200, 
+                gsuPriceMonthly: 2700,
+                gsuPrice3Month: 2400,
                 badgeColor: 'bg-blue-100 text-blue-800 border-blue-200'
+            },
+            'gemini_3_5_flash': {
+                name: 'Gemini 3.5 Flash',
+                provider: 'google',
+                inputPrice: 1.50,
+                outputPrice: 9.00,
+                gsuPriceWeekly: 600,
+                gsuPriceMonthly: 1350,
+                gsuPrice3Month: 1200,
+                badgeColor: 'bg-teal-100 text-teal-800 border-teal-200'
+            },
+            'gemini_3_flash': {
+                name: 'Gemini 3 Flash',
+                provider: 'google',
+                inputPrice: 0.50,
+                outputPrice: 3.00,
+                gsuPriceWeekly: 300,
+                gsuPriceMonthly: 675,
+                gsuPrice3Month: 600,
+                badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-200'
+            },
+            'gemini_3_1_flash_lite': {
+                name: 'Gemini 3.1 Flash-Lite',
+                provider: 'google',
+                inputPrice: 0.25,
+                outputPrice: 1.50,
+                gsuPriceWeekly: 150,
+                gsuPriceMonthly: 337.5,
+                gsuPrice3Month: 300,
+                badgeColor: 'bg-gray-100 text-slate-800 border-gray-200'
             },
             'claude_sonnet': {
                 name: 'Claude 3.5 Sonnet',
@@ -348,14 +372,29 @@
                 outputPrice: 15.00,
                 badgeColor: 'bg-amber-100 text-amber-800 border-amber-200'
             },
-            'claude_haiku': {
+            'claude_haiku_3_5': {
+                name: 'Claude 3.5 Haiku',
+                provider: 'anthropic',
+                inputPrice: 0.80,
+                outputPrice: 4.00,
+                badgeColor: 'bg-orange-100 text-orange-800 border-orange-200'
+            },
+            'claude_haiku_3': {
                 name: 'Claude 3 Haiku',
                 provider: 'anthropic',
                 inputPrice: 0.25,
                 outputPrice: 1.25,
-                badgeColor: 'bg-orange-100 text-orange-800 border-orange-200'
+                badgeColor: 'bg-red-100 text-red-800 border-red-200'
             }
         };
+
+        // Comparison Rows mapping
+        const comparisonRows = [
+            { gemini: 'gemini_3_1_pro', claude: 'claude_sonnet' },
+            { gemini: 'gemini_3_5_flash', claude: 'claude_haiku_3_5' },
+            { gemini: 'gemini_3_flash', claude: 'claude_haiku_3' },
+            { gemini: 'gemini_3_1_flash_lite', claude: 'claude_haiku_3' }
+        ];
 
         function setGeminiModel(mode) {
             geminiMode = mode;
@@ -394,38 +433,29 @@
 
             const selectedSimKey = document.getElementById('selectedSimulatorModel').value;
 
-            // Suggested GSU Estimation Engine
+            // QPS Calculations
             const secondsInMonth = 30 * 24 * 3600;
             const qps = requestVolume / secondsInMonth;
             const totalTokensPerSec = qps * (inputTokens + outputTokens);
 
-            // Assume 1 GSU yields ~5,000 token/sec capacity as a baseline
+            // Suggested GSU Baseline (Assuming 1 GSU yields ~5,000 tokens/sec continuous processing capacity)
             const suggestedGSU = Math.max(1, Math.ceil(totalTokensPerSec / 5000));
             document.getElementById('recQps').innerText = qps.toFixed(2);
             document.getElementById('recGsu').innerText = suggestedGSU + " GSU" + (suggestedGSU > 1 ? "s" : "");
 
-            // Total inputs for token calculations
+            // Accumulate workload token limits
             const totalInputTokens = inputTokens * requestVolume;
             const totalOutputTokens = outputTokens * requestVolume;
 
             const formatMoney = (amount) => '$' + amount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
-            // GSU Pricing structures (Monthly converted rates)
+            // PT Commitment Duration pricing parser
             const ptCommit = document.getElementById('ptCommitment').value;
             const gsuCount = parseFloat(document.getElementById('gsuCount').value) || 1;
 
-            let gsuPricePerMonth = 2700; // Default 1M
-            if (ptCommit === '1w') {
-                gsuPricePerMonth = 1200 * (52 / 12); // Weekly convert to monthly
-            } else if (ptCommit === '3m') {
-                gsuPricePerMonth = 2400;
-            }
-
-            const totalPtMonthlyCost = gsuCount * gsuPricePerMonth;
-
             let results = {};
 
-            // Calculate costs for all models
+            // Perform underlying workload cost evaluations for each model
             for (let key in models) {
                 const model = models[key];
                 let inputCost = 0;
@@ -436,14 +466,19 @@
                 const discountPct = model.provider === 'google' ? googleDiscount : anthropicDiscount;
 
                 if (model.provider === 'google' && geminiMode === 'pt') {
-                    // Provisioned Throughput billing model
-                    baseTotal = totalPtMonthlyCost;
+                    // PT GSU rate calculator per model
+                    let pricePerGsuMonth = model.gsuPriceMonthly;
+                    if (ptCommit === '1w') {
+                        pricePerGsuMonth = model.gsuPriceWeekly * (52 / 12); // Weekly convert to Monthly
+                    } else if (ptCommit === '3m') {
+                        pricePerGsuMonth = model.gsuPrice3Month;
+                    }
+                    baseTotal = gsuCount * pricePerGsuMonth;
                     finalCost = baseTotal * (1 - (discountPct / 100));
-                    // Arbitrarily split input/output 60/40 visually for ledger logic
-                    inputCost = baseTotal * 0.6;
+                    inputCost = baseTotal * 0.6; // Illustrated breakdown
                     outputCost = baseTotal * 0.4;
                 } else {
-                    // Pay-As-You-Go token model
+                    // Standard Pay-As-You-Go pricing logic
                     inputCost = (totalInputTokens / 1000000) * model.inputPrice;
                     outputCost = (totalOutputTokens / 1000000) * model.outputPrice;
                     baseTotal = inputCost + outputCost;
@@ -458,74 +493,101 @@
                 };
             }
 
-            // Generate Comparative Table HTML (Side-by-Side Gemini vs Claude)
-            const pairs = [
-                { geminiKey: 'gemini_3_flash', claudeKey: 'claude_haiku' },
-                { geminiKey: 'gemini_3_1_pro', claudeKey: 'claude_sonnet' }
-            ];
-
+            // Generate Side-by-Side Comparison Matrix Table
             let htmlTable = '';
-            pairs.forEach(pair => {
-                const gem = models[pair.geminiKey];
-                const gemRes = results[pair.geminiKey];
-                const gemType = (geminiMode === 'pt') 
-                    ? `PT (${ptCommit === '1w' ? '1-Wk' : ptCommit === '1m' ? '1-Mo' : '3-Mo'} Commit)` 
-                    : 'Pay-As-You-Go';
+            comparisonRows.forEach(row => {
+                const gemKey = row.gemini;
+                const cldKey = row.claude;
 
-                const cld = models[pair.claudeKey];
-                const cldRes = results[pair.claudeKey];
-                const cldType = 'Pay-As-You-Go';
+                const gem = models[gemKey];
+                const cld = models[cldKey];
+
+                const gemRes = results[gemKey];
+                const cldRes = results[cldKey];
+
+                // Pricing Label builders
+                let gemRateDisplay = '';
+                if (geminiMode === 'pt') {
+                    let pricePerGsuMonth = gem.gsuPriceMonthly;
+                    if (ptCommit === '1w') pricePerGsuMonth = gem.gsuPriceWeekly * (52 / 12);
+                    else if (ptCommit === '3m') pricePerGsuMonth = gem.gsuPrice3Month;
+                    gemRateDisplay = `${gsuCount} GSU × ${formatMoney(pricePerGsuMonth)}/mo`;
+                } else {
+                    gemRateDisplay = `$${gem.inputPrice.toFixed(2)} in / $${gem.outputPrice.toFixed(2)} out (per 1M)`;
+                }
+
+                const cldRateDisplay = `$${cld.inputPrice.toFixed(2)} in / $${cld.outputPrice.toFixed(2)} out (per 1M)`;
+
+                // Delta savings display
+                const delta = cldRes.finalCost - gemRes.finalCost;
+                let deltaDisplay = '';
+
+                if (delta > 0) {
+                    deltaDisplay = `<span class="inline-flex flex-col items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                        <span>Gemini Saves</span>
+                        <span class="font-extrabold text-sm">${formatMoney(delta)}</span>
+                    </span>`;
+                } else if (delta < 0) {
+                    deltaDisplay = `<span class="inline-flex flex-col items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-800 border border-slate-200">
+                        <span>Claude is cheaper</span>
+                        <span class="font-extrabold text-sm">${formatMoney(Math.abs(delta))}</span>
+                    </span>`;
+                } else {
+                    deltaDisplay = `<span class="text-xs text-slate-400 font-semibold uppercase">Cost Equivalent</span>`;
+                }
 
                 htmlTable += `
-                    <tr class="hover:bg-slate-50 transition-colors">
-                        <!-- Gemini Side -->
-                        <td class="px-4 py-4 font-bold text-slate-900">
-                            <div class="flex flex-col">
-                                <span>${gem.name}</span>
-                                <span class="text-[10px] text-slate-400 font-medium">${gemType}</span>
+                    <tr class="hover:bg-slate-50/70 transition-colors">
+                        <!-- Left Side: Gemini Model Details -->
+                        <td class="px-4 py-4 border-r border-slate-100">
+                            <div class="flex items-center space-x-2">
+                                <span class="font-bold text-slate-900">${gem.name}</span>
+                                <span class="text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide border ${gem.badgeColor}">Gemini</span>
                             </div>
-                        </td>
-                        <td class="px-4 py-4 text-right font-medium text-slate-500">
-                            ${formatMoney(gemRes.baseTotal)}
-                        </td>
-                        <td class="px-4 py-4 text-right font-extrabold text-googleBlue">
-                            ${formatMoney(gemRes.finalCost)}
-                            <span class="text-[9px] text-slate-400 block font-normal">${googleDiscount}% discount</span>
+                            <div class="text-xs text-slate-500 font-mono mt-1">${gemRateDisplay}</div>
+                            <div class="text-xs font-semibold text-slate-600 mt-2">
+                                Std: <span class="font-mono">${formatMoney(gemRes.baseTotal)}</span> | 
+                                <span class="text-indigo-600 font-bold">Disc: ${formatMoney(gemRes.finalCost)}</span>
+                            </div>
                         </td>
 
-                        <!-- Claude Side (Separated by left border) -->
-                        <td class="px-4 py-4 font-bold text-slate-900 border-l border-slate-200">
-                            <div class="flex flex-col">
-                                <span>${cld.name}</span>
-                                <span class="text-[10px] text-slate-400 font-medium">${cldType}</span>
+                        <!-- Middle Column: Comparison indicator -->
+                        <td class="px-4 py-4 text-center bg-slate-50/50 border-r border-slate-100">
+                            ${deltaDisplay}
+                        </td>
+
+                        <!-- Right Side: Claude Model Details -->
+                        <td class="px-4 py-4">
+                            <div class="flex items-center space-x-2">
+                                <span class="font-bold text-slate-900">${cld.name}</span>
+                                <span class="text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide border ${cld.badgeColor}">Claude</span>
                             </div>
-                        </td>
-                        <td class="px-4 py-4 text-right font-medium text-slate-500">
-                            ${formatMoney(cldRes.baseTotal)}
-                        </td>
-                        <td class="px-4 py-4 text-right font-extrabold text-anthropicOrange">
-                            ${formatMoney(cldRes.finalCost)}
-                            <span class="text-[9px] text-slate-400 block font-normal">${anthropicDiscount}% discount</span>
+                            <div class="text-xs text-slate-500 font-mono mt-1">${cldRateDisplay}</div>
+                            <div class="text-xs font-semibold text-slate-600 mt-2">
+                                Std: <span class="font-mono">${formatMoney(cldRes.baseTotal)}</span> | 
+                                <span class="text-anthropicOrange font-bold">Disc: ${formatMoney(cldRes.finalCost)}</span>
+                            </div>
                         </td>
                     </tr>
                 `;
             });
+
             document.getElementById('matrixBody').innerHTML = htmlTable;
 
-            // Update simulator components
+            // Update Isolated Simulation ledger metrics
             const simRes = results[selectedSimKey];
             document.getElementById('ledgerInputCost').innerText = formatMoney(simRes.inputCost);
             document.getElementById('ledgerOutputCost').innerText = formatMoney(simRes.outputCost);
             document.getElementById('ledgerSubtotal').innerText = formatMoney(simRes.baseTotal);
             document.getElementById('ledgerFinalCost').innerText = formatMoney(simRes.finalCost);
 
-            // Update focused visualization blocks
+            // Update bottom focus metrics cards
             document.getElementById('geminiProTotal').innerText = formatMoney(results['gemini_3_1_pro'].finalCost);
-            document.getElementById('geminiFlashTotal').innerText = formatMoney(results['gemini_3_flash'].finalCost);
+            document.getElementById('geminiFlashTotal').innerText = formatMoney(results['gemini_3_5_flash'].finalCost);
             document.getElementById('claudeSonnetTotal').innerText = formatMoney(results['claude_sonnet'].finalCost);
-            document.getElementById('claudeHaikuTotal').innerText = formatMoney(results['claude_haiku'].finalCost);
+            document.getElementById('claudeHaikuTotal').innerText = formatMoney(results['claude_haiku_3_5'].finalCost);
 
-            // Calculate dynamic ratios to display relative savings bar sizes
+            // Compute dynamic ratio widths
             const maxCost = Math.max(
                 results['gemini_3_1_pro'].finalCost,
                 results['claude_sonnet'].finalCost
@@ -537,23 +599,20 @@
             document.getElementById('googleRatioBar').style.width = Math.max(googleProPct, 5) + '%';
             document.getElementById('anthropicRatioBar').style.width = Math.max(anthropicSonnetPct, 5) + '%';
 
-            // Savings analysis notification
-            let savingsText = '';
-            let savingsVal = 0;
-            if (results['claude_haiku'].finalCost > results['gemini_3_flash'].finalCost) {
-                savingsVal = results['claude_haiku'].finalCost - results['gemini_3_flash'].finalCost;
-                savingsText = `Using <strong>Gemini 3 Flash</strong> over <strong>Claude 3 Haiku</strong> saves Fivetran <strong class="underline">${formatMoney(savingsVal)}</strong> monthly!`;
+            // Top Alert Box text rendering (Gemini 3.5 Flash vs Claude 3.5 Haiku comparison)
+            const flashSavings = results['claude_haiku_3_5'].finalCost - results['gemini_3_5_flash'].finalCost;
+            let alertText = '';
+            if (flashSavings > 0) {
+                alertText = `Using <strong>Gemini 3.5 Flash</strong> over <strong>Claude 3.5 Haiku</strong> saves Fivetran <strong class="underline">${formatMoney(flashSavings)}</strong> monthly!`;
                 document.getElementById('savingsAlert').className = "bg-emerald-50 border border-emerald-200 rounded-2xl p-5 shadow-sm flex items-center space-x-4";
             } else {
-                savingsVal = results['gemini_3_flash'].finalCost - results['claude_haiku'].finalCost;
-                savingsText = `Note: Applied custom discounts have brought Claude 3 Haiku $${savingsVal.toFixed(2)} below Gemini 3 Flash.`;
+                alertText = `Claude 3.5 Haiku is currently pricing at ${formatMoney(Math.abs(flashSavings))} below Gemini 3.5 Flash. Check model capacities and context caching!`;
                 document.getElementById('savingsAlert').className = "bg-slate-50 border border-slate-200 rounded-2xl p-5 shadow-sm flex items-center space-x-4 text-slate-700";
             }
-            document.getElementById('savingsCalculated').innerText = formatMoney(savingsVal);
-            document.getElementById('savingsDescription').innerHTML = savingsText;
+            document.getElementById('savingsDescription').innerHTML = alertText;
         }
 
-        // Initialize immediately
+        // Auto-initialize calculator execution loops
         window.onload = function() {
             calculate();
         };
