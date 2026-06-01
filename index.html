@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -99,7 +100,7 @@
                     <!-- Gemini Consumption Model Selection -->
                     <div class="border-t border-slate-100 pt-6 space-y-4">
                         <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Gemini Buying Model</h3>
-                        
+
                         <div class="grid grid-cols-2 gap-2">
                             <button id="btnPaygo" onclick="setGeminiModel('paygo')" class="py-2.5 px-3 rounded-lg text-xs font-bold border transition-all duration-200 text-center bg-googleBlue text-white border-googleBlue">
                                 Pay-As-You-Go
@@ -202,18 +203,23 @@
                     </div>
 
                     <div class="overflow-x-auto">
-                        <table class="min-w-full text-sm text-left">
+                        <table class="min-w-full text-sm text-left border-collapse">
                             <thead class="bg-slate-100 text-slate-600 font-semibold text-xs uppercase tracking-wider">
                                 <tr>
-                                    <th class="px-4 py-3 rounded-l-lg">Model</th>
-                                    <th class="px-4 py-3">Type</th>
-                                    <th class="px-4 py-3">In / Out Cost (per 1M)</th>
-                                    <th class="px-4 py-3 text-right">Standard Cost / mo</th>
-                                    <th class="px-4 py-3 text-right text-indigo-700">Discounted Cost / mo</th>
+                                    <th class="px-4 py-3 rounded-l-lg text-center bg-blue-50/50 text-googleBlue font-bold" colspan="3">Google Gemini Stack</th>
+                                    <th class="px-4 py-3 border-l border-slate-200 text-center bg-amber-50/50 text-anthropicOrange font-bold rounded-r-lg" colspan="3">Anthropic Claude Stack</th>
+                                </tr>
+                                <tr class="bg-slate-50 text-[10px] text-slate-500 border-t border-slate-200">
+                                    <th class="px-4 py-2">Model & Plan</th>
+                                    <th class="px-4 py-2 text-right">Standard</th>
+                                    <th class="px-4 py-2 text-right text-googleBlue">Discounted</th>
+                                    <th class="px-4 py-2 border-l border-slate-200">Model & Plan</th>
+                                    <th class="px-4 py-2 text-right">Standard</th>
+                                    <th class="px-4 py-2 text-right text-anthropicOrange">Discounted</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100" id="matrixBody">
-                                <!-- Dynamically generated rows -->
+                                <!-- Dynamically generated side-by-side rows -->
                             </tbody>
                         </table>
                     </div>
@@ -389,12 +395,11 @@
             const selectedSimKey = document.getElementById('selectedSimulatorModel').value;
 
             // Suggested GSU Estimation Engine
-            // Avg QPS = volume / (30 days * 86400 seconds)
             const secondsInMonth = 30 * 24 * 3600;
             const qps = requestVolume / secondsInMonth;
             const totalTokensPerSec = qps * (inputTokens + outputTokens);
-            
-            // Assume 1 GSU yields ~5,000 token/sec capacity as a generalized baseline
+
+            // Assume 1 GSU yields ~5,000 token/sec capacity as a baseline
             const suggestedGSU = Math.max(1, Math.ceil(totalTokensPerSec / 5000));
             document.getElementById('recQps').innerText = qps.toFixed(2);
             document.getElementById('recGsu').innerText = suggestedGSU + " GSU" + (suggestedGSU > 1 ? "s" : "");
@@ -408,7 +413,7 @@
             // GSU Pricing structures (Monthly converted rates)
             const ptCommit = document.getElementById('ptCommitment').value;
             const gsuCount = parseFloat(document.getElementById('gsuCount').value) || 1;
-            
+
             let gsuPricePerMonth = 2700; // Default 1M
             if (ptCommit === '1w') {
                 gsuPricePerMonth = 1200 * (52 / 12); // Weekly convert to monthly
@@ -420,7 +425,7 @@
 
             let results = {};
 
-            // Calculate costs
+            // Calculate costs for all models
             for (let key in models) {
                 const model = models[key];
                 let inputCost = 0;
@@ -453,45 +458,58 @@
                 };
             }
 
-            // Generate Comparative Table HTML
+            // Generate Comparative Table HTML (Side-by-Side Gemini vs Claude)
+            const pairs = [
+                { geminiKey: 'gemini_3_flash', claudeKey: 'claude_haiku' },
+                { geminiKey: 'gemini_3_1_pro', claudeKey: 'claude_sonnet' }
+            ];
+
             let htmlTable = '';
-            for (let key in models) {
-                const model = models[key];
-                const res = results[key];
-                const discPct = model.provider === 'google' ? googleDiscount : anthropicDiscount;
-                
-                const currentTypeLabel = (model.provider === 'google' && geminiMode === 'pt') 
+            pairs.forEach(pair => {
+                const gem = models[pair.geminiKey];
+                const gemRes = results[pair.geminiKey];
+                const gemType = (geminiMode === 'pt') 
                     ? `PT (${ptCommit === '1w' ? '1-Wk' : ptCommit === '1m' ? '1-Mo' : '3-Mo'} Commit)` 
                     : 'Pay-As-You-Go';
 
-                const rateDisplay = (model.provider === 'google' && geminiMode === 'pt')
-                    ? `${gsuCount} GSU × ${formatMoney(gsuPricePerMonth)}`
-                    : `$${model.inputPrice.toFixed(2)} / $${model.outputPrice.toFixed(2)}`;
+                const cld = models[pair.claudeKey];
+                const cldRes = results[pair.claudeKey];
+                const cldType = 'Pay-As-You-Go';
 
                 htmlTable += `
                     <tr class="hover:bg-slate-50 transition-colors">
-                        <td class="px-4 py-3.5 font-bold text-slate-900 flex flex-col sm:flex-row sm:items-center">
-                            <span>${model.name}</span>
-                            <span class="text-[10px] mt-1 sm:mt-0 sm:ml-2 px-2 py-0.5 rounded-full font-semibold border ${model.badgeColor} uppercase tracking-wider inline-block max-w-fit">
-                                ${model.provider}
-                            </span>
+                        <!-- Gemini Side -->
+                        <td class="px-4 py-4 font-bold text-slate-900">
+                            <div class="flex flex-col">
+                                <span>${gem.name}</span>
+                                <span class="text-[10px] text-slate-400 font-medium">${gemType}</span>
+                            </div>
                         </td>
-                        <td class="px-4 py-3.5 text-xs text-slate-600 font-medium">
-                            ${currentTypeLabel}
+                        <td class="px-4 py-4 text-right font-medium text-slate-500">
+                            ${formatMoney(gemRes.baseTotal)}
                         </td>
-                        <td class="px-4 py-3.5 text-slate-500 font-mono text-xs">
-                            ${rateDisplay}
+                        <td class="px-4 py-4 text-right font-extrabold text-googleBlue">
+                            ${formatMoney(gemRes.finalCost)}
+                            <span class="text-[9px] text-slate-400 block font-normal">${googleDiscount}% discount</span>
                         </td>
-                        <td class="px-4 py-3.5 text-right font-semibold text-slate-700">
-                            ${formatMoney(res.baseTotal)}
+
+                        <!-- Claude Side (Separated by left border) -->
+                        <td class="px-4 py-4 font-bold text-slate-900 border-l border-slate-200">
+                            <div class="flex flex-col">
+                                <span>${cld.name}</span>
+                                <span class="text-[10px] text-slate-400 font-medium">${cldType}</span>
+                            </div>
                         </td>
-                        <td class="px-4 py-3.5 text-right font-extrabold text-indigo-600">
-                            ${formatMoney(res.finalCost)} 
-                            <span class="text-[10px] text-slate-400 block font-normal">${discPct}% discount applied</span>
+                        <td class="px-4 py-4 text-right font-medium text-slate-500">
+                            ${formatMoney(cldRes.baseTotal)}
+                        </td>
+                        <td class="px-4 py-4 text-right font-extrabold text-anthropicOrange">
+                            ${formatMoney(cldRes.finalCost)}
+                            <span class="text-[9px] text-slate-400 block font-normal">${anthropicDiscount}% discount</span>
                         </td>
                     </tr>
                 `;
-            }
+            });
             document.getElementById('matrixBody').innerHTML = htmlTable;
 
             // Update simulator components
@@ -542,3 +560,4 @@
     </script>
 </body>
 </html>
+```
