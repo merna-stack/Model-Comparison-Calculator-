@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fivetran "Cursor for Data" Cost Estimator: Claude vs. Gemini 3 (PT Edition)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        googleBlue: '#4285F4',
+                        googleRed: '#EA4335',
+                        googleYellow: '#FBBC05',
+                        googleGreen: '#34A853',
+                        anthropicOrange: '#CC5A01',
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800 antialiased p-4 sm:p-6 md:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <!-- Dashboard Header -->
+        <header class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between border-b border-slate-200 pb-6">
+            <div>
+                <div class="flex items-center space-x-2 text-xs font-semibold tracking-wider text-googleBlue uppercase mb-1">
+                    <span>Partner Architecture & Spend Analysis</span>
+                    <span>•</span>
+                    <span class="text-anthropicOrange">Fivetran "Cursor for Data"</span>
+                </div>
+                <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">AI Model & Commitment Pricing Calculator</h1>
+                <p class="text-sm text-slate-500 mt-1">A comparative cost estimator mapping Google Gemini 3 / 3.1 PayGo & Provisioned Throughput (GSUs) against Anthropic Claude 4 workloads.</p>
+            </div>
+            <div class="mt-4 md:mt-0 flex flex-wrap gap-2">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-googleBlue">
+                    Vertex AI PT (GSU) Support
+                </span>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                    Claude Priority Commitments
+                </span>
+            </div>
+        </header>
+
+        <!-- Use Case Presets Helper -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 mb-6">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Fivetran Developer Tool Workload Presets</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <button onclick="applyPreset(800, 150, 1000000, 12)" class="flex flex-col items-start p-3 text-left border border-slate-200 rounded-lg hover:border-googleBlue hover:bg-blue-50/50 transition-all duration-200">
+                    <span class="font-semibold text-sm text-slate-900">1. Code Autocomplete</span>
+                    <span class="text-xs text-slate-500 mt-1">High volume, short prompts (800 In / 150 Out, 1M Req, ~12 QPS)</span>
+                </button>
+                <button onclick="applyPreset(4000, 800, 200000, 4)" class="flex flex-col items-start p-3 text-left border border-slate-200 rounded-lg hover:border-googleBlue hover:bg-blue-50/50 transition-all duration-200">
+                    <span class="font-semibold text-sm text-slate-900">2. Chat & Debugging</span>
+                    <span class="text-xs text-slate-500 mt-1">Medium conversational context (4k In / 800 Out, 200k Req, ~4 QPS)</span>
+                </button>
+                <button onclick="applyPreset(30000, 2000, 15000, 2)" class="flex flex-col items-start p-3 text-left border border-slate-200 rounded-lg hover:border-googleBlue hover:bg-blue-50/50 transition-all duration-200">
+                    <span class="font-semibold text-sm text-slate-900">3. Repository Refactoring</span>
+                    <span class="text-xs text-slate-500 mt-1">Huge input codebase (30k In / 2k Out, 15k Req, ~2 QPS)</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- LEFT PANEL: INPUT CONTROLS -->
+            <div class="lg:col-span-1 space-y-6">
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
+                    <div class="border-b border-slate-100 pb-4">
+                        <h2 class="text-lg font-bold text-slate-900 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-googleBlue" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                            Calculator Parameters
+                        </h2>
+                    </div>
+
+                    <!-- Workload Specs -->
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Average Input Tokens</label>
+                            <div class="relative rounded-md shadow-sm">
+                                <input type="number" id="inputTokens" value="2000" oninput="calculate()" class="block w-full rounded-lg border-slate-200 pl-4 pr-16 py-2.5 focus:border-googleBlue focus:ring-googleBlue border text-slate-900 font-medium">
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <span class="text-slate-400 text-sm font-semibold">tokens</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Average Output Tokens</label>
+                            <div class="relative rounded-md shadow-sm">
+                                <input type="number" id="outputTokens" value="800" oninput="calculate()" class="block w-full rounded-lg border-slate-200 pl-4 pr-16 py-2.5 focus:border-googleBlue focus:ring-googleBlue border text-slate-900 font-medium">
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <span class="text-slate-400 text-sm font-semibold">tokens</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Monthly Volume (Requests)</label>
+                            <div class="relative rounded-md shadow-sm">
+                                <input type="number" id="requestVolume" value="500000" oninput="calculate()" class="block w-full rounded-lg border-slate-200 pl-4 pr-16 py-2.5 focus:border-googleBlue focus:ring-googleBlue border text-slate-900 font-medium">
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <span class="text-slate-400 text-sm font-semibold">req/mo</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Commitment and Throughput Parameters -->
+                    <div class="border-t border-slate-100 pt-6 space-y-4">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Provisioning & Commitments</h3>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Target Peak QPS (For PT capacity)</label>
+                            <div class="relative rounded-md shadow-sm">
+                                <input type="number" id="peakQps" value="5.0" step="0.5" oninput="calculate()" class="block w-full rounded-lg border-slate-200 pl-4 pr-16 py-2.5 focus:border-googleBlue focus:ring-googleBlue border text-slate-900 font-medium">
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <span class="text-slate-400 text-sm font-semibold">req/sec</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Gemini PT Duration Plan</label>
+                            <select id="geminiCommitment" onchange="calculate()" class="block w-full rounded-lg border-slate-200 py-2.5 px-3 border text-slate-900 font-medium focus:border-googleBlue focus:ring-googleBlue bg-white">
+                                <option value="none">No Commitment (PayGo Rates)</option>
+                                <option value="1w">1-Week Commit ($1,200/GSU/wk)</option>
+                                <option value="1m">1-Month Commit ($2,700/GSU/mo)</option>
+                                <option value="3m">3-Month Commit ($2,400/GSU/mo)</option>
+                                <option value="1y" selected>1-Year Commit ($2,000/GSU/mo)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Claude Custom Commit Plan</label>
+                            <select id="claudeCommitment" onchange="calculate()" class="block w-full rounded-lg border-slate-200 py-2.5 px-3 border text-slate-900 font-medium focus:border-googleBlue focus:ring-googleBlue bg-white">
+                                <option value="none">No Commitment (PAYG Rates)</option>
+                                <option value="1m">1-Month Commit (15% Extra Discount)</option>
+                                <option value="6m">6-Month Commit (25% Extra Discount)</option>
+                                <option value="1y" selected>1-Year Commit (35% Extra Discount)</option>
+                            </select>
+                            <span class="text-[10px] text-slate-400 mt-1 block">Simulates Anthropic Priority Tier or Bedrock negotiated models.</span>
+                        </div>
+
+                        <div class="flex items-center space-x-2 pt-2">
+                            <input type="checkbox" id="nonGlobalRegion" onchange="calculate()" class="w-4 h-4 text-googleBlue border-slate-300 rounded focus:ring-googleBlue">
+                            <label for="nonGlobalRegion" class="text-xs font-semibold text-slate-600 uppercase tracking-wider">Use Non-Global GSU (10% premium)</label>
+                        </div>
+                    </div>
+
+                    <!-- Custom Discounts Section -->
+                    <div class="border-t border-slate-100 pt-6 space-y-4">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Enterprise Discounts (%)</h3>
+
+                        <div>
+                            <label class="flex justify-between text-xs font-medium text-slate-600 mb-1">
+                                <span>Google Cloud (Gemini) Discount</span>
+                                <span class="text-googleBlue font-bold" id="googleDiscountVal">15%</span>
+                            </label>
+                            <input type="range" id="discountGoogle" min="0" max="100" value="15" oninput="updateGoogleSlider(this.value); calculate();" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-googleBlue">
+                        </div>
+
+                        <div>
+                            <label class="flex justify-between text-xs font-medium text-slate-600 mb-1">
+                                <span>Anthropic (Claude) Discount</span>
+                                <span class="text-anthropicOrange font-bold" id="anthropicDiscountVal">0%</span>
+                            </label>
+                            <input type="range" id="discountAnthropic" min="0" max="100" value="0" oninput="updateAnthropicSlider(this.value); calculate();" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-anthropicOrange">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Provisioned Throughput Info Cards -->
+                <div class="bg-gradient-to-br from-blue-900 to-indigo-950 rounded-2xl shadow-sm text-white p-6 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 -mr-6 -mt-6 w-24 h-24 rounded-full bg-white/5 pointer-events-none"></div>
+                    <h3 class="font-bold text-lg mb-2">Vertex AI GSU Architecture</h3>
+                    <p class="text-xs text-indigo-200 font-medium mb-3">Generative AI Scale Units (GSUs) assure capacity under an SLA:</p>
+                    <ul class="text-xs space-y-2 text-indigo-200 font-medium">
+                        <li class="flex items-start">
+                            <span class="text-emerald-400 mr-2">✓</span>
+                            <span><strong>Guaranteed TPS:</strong> Avoid 429 rate limit spikes completely.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-emerald-400 mr-2">✓</span>
+                            <span><strong>Graceful Spillover:</strong> Traffic exceeding your GSU capacity safely cascades to standard PayGo rates.</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-emerald-400 mr-2">✓</span>
+                            <span><strong>Flexible Exchange:</strong> Swap model allocations (e.g. Pro to Flash) within active GSU terms.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- RIGHT PANEL: DETAILED CALCULATIONS AND LIVE RESULTS -->
+            <div class="lg:col-span-2 space-y-6">
+
+                <!-- Dynamic Cost Callout (Savings Alert) -->
+                <div id="savingsAlert" class="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 shadow-sm flex items-center space-x-4">
+                    <div class="p-3 bg-emerald-500 rounded-xl text-white">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-emerald-900 text-sm">Fivetran Optimization & Breakeven Insight</h4>
+                        <p class="text-sm text-emerald-700" id="savingsDescription">
+                            Analyzing...
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Live Model Comparison Matrix -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 overflow-hidden">
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-4 mb-6">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900">Side-by-Side Unified Pricing Analysis</h3>
+                            <p class="text-xs text-slate-400 font-medium">Compares on-demand pay-per-token against committed capacity configurations.</p>
+                        </div>
+                        <span class="text-xs text-slate-400 font-mono">Auto-recalculates</span>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm text-left">
+                            <thead class="bg-slate-100 text-slate-600 font-semibold text-xs uppercase tracking-wider">
+                                <tr>
+                                    <th class="px-4 py-3 rounded-l-lg">Model</th>
+                                    <th class="px-4 py-3">PayGo (Standard)</th>
+                                    <th class="px-4 py-3 text-right">PayGo (Discounted)</th>
+                                    <th class="px-4 py-3 text-right text-indigo-700">Committed/PT Plan</th>
+                                    <th class="px-4 py-3 rounded-r-lg text-right">Optimal Model Choice</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100" id="matrixBody">
+                                <!-- Dynamically generated rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Committed vs. On-Demand Visualizer -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Google Gemini Focused -->
+                    <div class="bg-blue-50/50 border border-blue-100 rounded-2xl p-6 shadow-sm">
+                        <div class="flex items-center space-x-2 text-googleBlue font-bold text-sm mb-4 uppercase tracking-wider">
+                            <span class="w-2.5 h-2.5 rounded-full bg-googleBlue"></span>
+                            <span>Google Cloud Stack comparison</span>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <div class="text-[10px] text-slate-400 uppercase font-semibold">Gemini 3.1 Pro (Committed PT)</div>
+                                    <div class="text-2xl font-bold text-slate-900 mt-1" id="geminiProTotal">$0.00</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-[10px] text-slate-400 uppercase font-bold">Gemini 3.5 Flash (Committed PT)</div>
+                                    <div class="text-xl font-bold text-googleGreen mt-0.5" id="geminiFlashTotal">$0.00</div>
+                                </div>
+                            </div>
+                            <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                                <div class="bg-googleBlue h-full rounded-full" id="googleRatioBar" style="width: 50%"></div>
+                            </div>
+                            <p class="text-[11px] text-slate-500 italic" id="geminiExplanation">Calculating scale requirements...</p>
+                        </div>
+                    </div>
+
+                    <!-- Anthropic Claude Focused -->
+                    <div class="bg-amber-50/50 border border-amber-100 rounded-2xl p-6 shadow-sm">
+                        <div class="flex items-center space-x-2 text-anthropicOrange font-bold text-sm mb-4 uppercase tracking-wider">
+                            <span class="w-2.5 h-2.5 rounded-full bg-anthropicOrange"></span>
+                            <span>Anthropic Claude Stack comparison</span>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <div class="text-[10px] text-slate-400 uppercase font-semibold">Claude Sonnet 4.6 (Committed)</div>
+                                    <div class="text-2xl font-bold text-slate-900 mt-1" id="claudeSonnetTotal">$0.00</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-[10px] text-slate-400 uppercase font-bold">Claude Haiku 4.5 (Committed)</div>
+                                    <div class="text-xl font-bold text-amber-700 mt-0.5" id="claudeHaikuTotal">$0.00</div>
+                                </div>
+                            </div>
+                            <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                                <div class="bg-anthropicOrange h-full rounded-full" id="anthropicRatioBar" style="width: 50%"></div>
+                            </div>
+                            <p class="text-[11px] text-slate-500 italic" id="claudeExplanation">Applying custom commitment configurations...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Selected Model Simulator Tool -->
+                <div class="bg-slate-950 text-white rounded-2xl shadow-xl p-6 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10">
+                        <svg class="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10H7v-2h10v2zm0-4H7V7h10v2zm0 8H7v-2h10v2z"/></svg>
+                    </div>
+                    <div class="relative z-10 space-y-6">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-800 pb-4">
+                            <div>
+                                <h4 class="font-extrabold text-base tracking-wide uppercase text-indigo-400">Isolated Architecture Simulator</h4>
+                                <p class="text-xs text-slate-400 font-medium">Under-the-hood parameters for selected models</p>
+                            </div>
+                            <div class="mt-2 md:mt-0">
+                                <select id="selectedSimulatorModel" onchange="calculate()" class="bg-slate-900 border border-slate-800 text-white text-sm font-semibold rounded-lg px-4 py-2 focus:ring-googleBlue focus:border-googleBlue block">
+                                    <option value="gemini_3_1_pro" selected>Gemini 3.1 Pro</option>
+                                    <option value="gemini_3_5_flash">Gemini 3.5 Flash</option>
+                                    <option value="gemini_3_flash">Gemini 3 Flash</option>
+                                    <option value="claude_4_opus">Claude 4 Opus</option>
+                                    <option value="claude_sonnet_4_6">Claude Sonnet 4.6</option>
+                                    <option value="claude_haiku_4_5">Claude Haiku 4.5</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                                <span class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">PayGo Standard</span>
+                                <div class="text-lg font-bold text-white mt-1" id="ledgerInputCost">$0.00</div>
+                            </div>
+                            <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                                <span class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">PayGo Discounted</span>
+                                <div class="text-lg font-bold text-white mt-1" id="ledgerOutputCost">$0.00</div>
+                            </div>
+                            <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                                <span class="text-[10px] uppercase font-bold text-slate-500 tracking-wider" id="metricLabel">Sizing Metric</span>
+                                <div class="text-lg font-bold text-indigo-300 mt-1" id="ledgerSubtotal">0 Units</div>
+                            </div>
+                            <div class="bg-indigo-950 p-4 rounded-xl border border-indigo-900 relative">
+                                <span class="text-[10px] uppercase font-bold text-indigo-400 tracking-wider block">Commitment Total</span>
+                                <div class="text-xl font-black text-googleGreen mt-1" id="ledgerFinalCost">$0.00</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Calculator JS Engine -->
+    <script>
+        const models = {
+            // Google Gemini 3rd Generation Stack
+            'gemini_3_1_pro': {
+                name: 'Gemini 3.1 Pro',
+                provider: 'google',
+                inputPrice: 2.00,
+                outputPrice: 12.00,
+                badgeColor: 'bg-indigo-100 text-indigo-800 border-indigo-200',
+                gsuCapacity: 2000 // Tokens per sec capacity per GSU
+            },
+            'gemini_3_5_flash': {
+                name: 'Gemini 3.5 Flash',
+                provider: 'google',
+                inputPrice: 1.50,
+                outputPrice: 9.00,
+                badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+                gsuCapacity: 3000
+            },
+            'gemini_3_flash': {
+                name: 'Gemini 3 Flash',
+                provider: 'google',
+                inputPrice: 0.50,
+                outputPrice: 3.00,
+                badgeColor: 'bg-blue-100 text-blue-800 border-blue-200',
+                gsuCapacity: 3500
+            },
+            // Anthropic Claude 4 Generation Stack
+            'claude_4_opus': {
+                name: 'Claude 4 Opus',
+                provider: 'anthropic',
+                inputPrice: 5.00,
+                outputPrice: 25.00,
+                badgeColor: 'bg-red-100 text-red-800 border-red-200',
+                commitmentDiscount: 0
+            },
+            'claude_sonnet_4_6': {
+                name: 'Claude Sonnet 4.6',
+                provider: 'anthropic',
+                inputPrice: 3.00,
+                outputPrice: 15.00,
+                badgeColor: 'bg-amber-100 text-amber-800 border-amber-200',
+                commitmentDiscount: 0
+            },
+            'claude_haiku_4_5': {
+                name: 'Claude Haiku 4.5',
+                provider: 'anthropic',
+                inputPrice: 1.00,
+                outputPrice: 5.00,
+                badgeColor: 'bg-orange-100 text-orange-800 border-orange-200',
+                commitmentDiscount: 0
+            }
+        };
+
+        // GSU Rates based on duration
+        const gsuRates = {
+            'none': 0, // No GSU commitment (reverts back to paygo)
+            '1w': 1200 * 52 / 12, // Weekly commitment scaled to monthly equivalent
+            '1m': 2700,
+            '3m': 2400,
+            '1y': 2000
+        };
+
+        // Claude Duration Custom Commitment Discounts
+        const claudeCommitmentDiscounts = {
+            'none': 0.0,
+            '1m': 0.15,
+            '6m': 0.25,
+            '1y': 0.35
+        };
+
+        function updateGoogleSlider(val) {
+            document.getElementById('googleDiscountVal').innerText = val + '%';
+        }
+
+        function updateAnthropicSlider(val) {
+            document.getElementById('anthropicDiscountVal').innerText = val + '%';
+        }
+
+        function applyPreset(input, output, volume, qps) {
+            document.getElementById('inputTokens').value = input;
+            document.getElementById('outputTokens').value = output;
+            document.getElementById('requestVolume').value = volume;
+            document.getElementById('peakQps').value = qps;
+            calculate();
+        }
+
+        function calculate() {
+            // Read inputs
+            const inputTokens = parseFloat(document.getElementById('inputTokens').value) || 0;
+            const outputTokens = parseFloat(document.getElementById('outputTokens').value) || 0;
+            const requestVolume = parseFloat(document.getElementById('requestVolume').value) || 0;
+            const peakQps = parseFloat(document.getElementById('peakQps').value) || 0;
+
+            const googleDiscount = parseFloat(document.getElementById('discountGoogle').value) || 0;
+            const anthropicDiscount = parseFloat(document.getElementById('discountAnthropic').value) || 0;
+
+            const geminiCommitmentKey = document.getElementById('geminiCommitment').value;
+            const claudeCommitmentKey = document.getElementById('claudeCommitment').value;
+            const isNonGlobal = document.getElementById('nonGlobalRegion').checked;
+
+            const selectedSimKey = document.getElementById('selectedSimulatorModel').value;
+
+            // Tokens per request and totals
+            const totalTokensPerQuery = inputTokens + outputTokens;
+            const totalInputTokens = inputTokens * requestVolume;
+            const totalOutputTokens = outputTokens * requestVolume;
+
+            const formatMoney = (amount) => '$' + amount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+            let results = {};
+
+            // Determine GSU Base Price
+            let gsuBasePrice = gsuRates[geminiCommitmentKey];
+            if (isNonGlobal) {
+                gsuBasePrice *= 1.10; // 10% premium for non-global zone
+            }
+
+            // Calculate costs for all models
+            for (let key in models) {
+                const model = models[key];
+
+                // Standard PAYG Cost
+                const inputCost = (totalInputTokens / 1000000) * model.inputPrice;
+                const outputCost = (totalOutputTokens / 1000000) * model.outputPrice;
+                const paygoBase = inputCost + outputCost;
+
+                // Discounted PAYG Cost
+                const paygoDiscountPct = model.provider === 'google' ? googleDiscount : anthropicDiscount;
+                const paygoDiscounted = paygoBase * (1 - (paygoDiscountPct / 100));
+
+                // Commitment Plan Cost Calculation
+                let committedCost = 0;
+                let scaleUnits = 0;
+
+                if (model.provider === 'google') {
+                    if (geminiCommitmentKey === 'none') {
+                        // Standard PayGo model with no commitments
+                        committedCost = paygoDiscounted;
+                        scaleUnits = 0;
+                    } else {
+                        // Gemini GSU Model Sizing
+                        const throughputNeeded = totalTokensPerQuery * peakQps;
+                        scaleUnits = Math.max(1, Math.ceil(throughputNeeded / model.gsuCapacity));
+
+                        // Committed Monthly cost is GSU units * GSU monthly base rate
+                        // Standard enterprise discounts can still be applied
+                        committedCost = scaleUnits * gsuBasePrice * (1 - (googleDiscount / 100));
+                    }
+                } else {
+                    // Claude commitment pricing (Duration commitment discount applied on top of standard PAYG)
+                    const durationDiscount = claudeCommitmentDiscounts[claudeCommitmentKey];
+                    committedCost = paygoDiscounted * (1 - durationDiscount);
+                    scaleUnits = durationDiscount * 100; // Simulated as % savings
+                }
+
+                results[key] = {
+                    paygoBase,
+                    paygoDiscounted,
+                    committedCost,
+                    scaleUnits,
+                    isBetterCommit: committedCost < paygoDiscounted
+                };
+            }
+
+            // Generate Comparative Table HTML
+            let htmlTable = '';
+            for (let key in models) {
+                const model = models[key];
+                const res = results[key];
+
+                const isGoogleNoCommit = model.provider === 'google' && geminiCommitmentKey === 'none';
+                const isClaudeNoCommit = model.provider === 'anthropic' && claudeCommitmentKey === 'none';
+
+                const optimalRoute = (res.isBetterCommit && !isGoogleNoCommit && !isClaudeNoCommit)
+                    ? `<span class="px-2 py-1 bg-indigo-50 text-indigo-700 font-extrabold text-[10px] rounded-md border border-indigo-200">Commitment (${res.scaleUnits ? res.scaleUnits + ' GSU' : 'Duration'})</span>`
+                    : `<span class="px-2 py-1 bg-amber-50 text-amber-700 font-extrabold text-[10px] rounded-md border border-amber-200">PayGo (Standard)</span>`;
+
+                let committedDisplay = '';
+                if (model.provider === 'google') {
+                    if (geminiCommitmentKey === 'none') {
+                        committedDisplay = `${formatMoney(res.committedCost)} <span class="text-[10px] text-slate-400 block font-normal">PayGo Pricing Active</span>`;
+                    } else {
+                        committedDisplay = `${formatMoney(res.committedCost)} <span class="text-[10px] text-slate-400 block font-normal">Requires ${res.scaleUnits} GSUs</span>`;
+                    }
+                } else {
+                    committedDisplay = `${formatMoney(res.committedCost)} <span class="text-[10px] text-slate-400 block font-normal">${claudeCommitmentDiscounts[claudeCommitmentKey] * 100}% Term Discount</span>`;
+                }
+
+                htmlTable += `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="px-4 py-3.5 font-bold text-slate-900 flex flex-col sm:flex-row sm:items-center">
+                            <span>${model.name}</span>
+                            <span class="text-[10px] mt-1 sm:mt-0 sm:ml-2 px-2 py-0.5 rounded-full font-semibold border ${model.badgeColor} uppercase tracking-wider inline-block max-w-fit">
+                                ${model.provider}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3.5 text-slate-500 font-mono text-xs">
+                            ${formatMoney(res.paygoBase)}
+                        </td>
+                        <td class="px-4 py-3.5 text-right font-semibold text-slate-700">
+                            ${formatMoney(res.paygoDiscounted)}
+                        </td>
+                        <td class="px-4 py-3.5 text-right font-extrabold text-indigo-600">
+                            ${committedDisplay}
+                        </td>
+                        <td class="px-4 py-3.5 text-right">
+                            ${optimalRoute}
+                        </td>
+                    </tr>
+                `;
+            }
+            document.getElementById('matrixBody').innerHTML = htmlTable;
+
+            // Update simulator components
+            const simRes = results[selectedSimKey];
+            const simModel = models[selectedSimKey];
+
+            document.getElementById('ledgerInputCost').innerText = formatMoney(simRes.paygoBase);
+            document.getElementById('ledgerOutputCost').innerText = formatMoney(simRes.paygoDiscounted);
+
+            if (simModel.provider === 'google') {
+                if (geminiCommitmentKey === 'none') {
+                    document.getElementById('metricLabel').innerText = "GSU COMMITMENT";
+                    document.getElementById('ledgerSubtotal').innerText = "None (PayGo)";
+                } else {
+                    document.getElementById('metricLabel').innerText = "CALCULATED GSUs";
+                    document.getElementById('ledgerSubtotal').innerText = `${simRes.scaleUnits} GSUs @ ${simModel.gsuCapacity} t/s`;
+                }
+            } else {
+                document.getElementById('metricLabel').innerText = "TERM SAVINGS %";
+                document.getElementById('ledgerSubtotal').innerText = `${claudeCommitmentDiscounts[claudeCommitmentKey] * 100}% Discount`;
+            }
+            document.getElementById('ledgerFinalCost').innerText = formatMoney(simRes.committedCost);
+
+            // Update focused visualization blocks
+            document.getElementById('geminiProTotal').innerText = formatMoney(results['gemini_3_1_pro'].committedCost);
+            document.getElementById('geminiFlashTotal').innerText = formatMoney(results['gemini_3_5_flash'].committedCost);
+            document.getElementById('claudeSonnetTotal').innerText = formatMoney(results['claude_sonnet_4_6'].committedCost);
+            document.getElementById('claudeHaikuTotal').innerText = formatMoney(results['claude_haiku_4_5'].committedCost);
+
+            // Update ratio bars based on committed models
+            const maxCost = Math.max(
+                results['gemini_3_1_pro'].committedCost,
+                results['claude_sonnet_4_6'].committedCost
+            ) || 1;
+
+            const googleProPct = (results['gemini_3_1_pro'].committedCost / maxCost) * 100;
+            const anthropicSonnetPct = (results['claude_sonnet_4_6'].committedCost / maxCost) * 100;
+
+            document.getElementById('googleRatioBar').style.width = Math.max(googleProPct, 5) + '%';
+            document.getElementById('anthropicRatioBar').style.width = Math.max(anthropicSonnetPct, 5) + '%';
+
+            // Explanatory highlights below visual bars
+            if (geminiCommitmentKey === 'none') {
+                document.getElementById('geminiExplanation').innerHTML = 
+                    `Gemini is running on standard <strong>PayGo rates</strong> with no throughput guarantee.`;
+            } else {
+                document.getElementById('geminiExplanation').innerHTML = 
+                    `Gemini 3.1 Pro requires <strong>${results['gemini_3_1_pro'].scaleUnits} GSUs</strong> to cover peak ${peakQps} QPS.`;
+            }
+            document.getElementById('claudeExplanation').innerHTML = 
+                `Claude Sonnet 4.6 includes custom term discount of <strong>${claudeCommitmentDiscounts[claudeCommitmentKey] * 100}%</strong>.`;
+
+            // Automated Breakeven & Savings Analysis Callout
+            let savingsText = '';
+            const flashPaygo = results['gemini_3_5_flash'].paygoDiscounted;
+            const flashCommitted = results['gemini_3_5_flash'].committedCost;
+
+            if (geminiCommitmentKey === 'none') {
+                savingsText = `Gemini is currently set to <strong>PayGo</strong>. Switch to a <strong>Commitment Plan</strong> to evaluate GSU-based provisioned throughput discounts!`;
+                document.getElementById('savingsAlert').className = "bg-blue-50 border border-blue-200 rounded-2xl p-5 shadow-sm flex items-center space-x-4 text-blue-700";
+            } else if (flashCommitted < flashPaygo) {
+                const diff = flashPaygo - flashCommitted;
+                savingsText = `For <strong>Gemini 3.5 Flash</strong>, committing to the <strong>${geminiCommitmentKey === '1y' ? '1-Year' : geminiCommitmentKey === '3m' ? '3-Month' : geminiCommitmentKey === '1m' ? '1-Month' : '1-Week'} PT plan</strong> saves Fivetran <strong class="underline">${formatMoney(diff)}</strong> per month compared to standard PayGo rates at peak traffic volume!`;
+                document.getElementById('savingsAlert').className = "bg-emerald-50 border border-emerald-200 rounded-2xl p-5 shadow-sm flex items-center space-x-4";
+            } else {
+                const diff = flashCommitted - flashPaygo;
+                savingsText = `For <strong>Gemini 3.5 Flash</strong>, standard PayGo is still more cost-effective by <strong class="underline">${formatMoney(diff)}</strong> per month. Consider upgrading to GSUs as your baseline production traffic approaches <strong>${Math.ceil(flashCommitted / ( (inputTokens * 1.5 + outputTokens * 9) / 1000000 ))} requests/mo</strong>.`;
+                document.getElementById('savingsAlert').className = "bg-slate-50 border border-slate-200 rounded-2xl p-5 shadow-sm flex items-center space-x-4 text-slate-700";
+            }
+            document.getElementById('savingsDescription').innerHTML = savingsText;
+        }
+
+        // Initialize immediately
+        window.onload = function() {
+            calculate();
+        };
+    </script>
+</body>
+</html>
