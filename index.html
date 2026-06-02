@@ -537,19 +537,19 @@
             document.getElementById('anthropicRatioBar').style.width = Math.max(anthropicSonnetPct, 5) + '%';
 
             // Savings analysis notification
-            let savingsText = '';
-            let savingsVal = 0;
-            if (results['claude_haiku'].finalCost > results['gemini_3_flash'].finalCost) {
-                savingsVal = results['claude_haiku'].finalCost - results['gemini_3_flash'].finalCost;
-                savingsText = `Using <strong>Gemini 3 Flash</strong> over <strong>Claude 3 Haiku</strong> saves Fivetran <strong class="underline">${formatMoney(savingsVal)}</strong> monthly!`;
-                document.getElementById('savingsAlert').className = "bg-emerald-50 border border-emerald-200 rounded-2xl p-5 shadow-sm flex items-center space-x-4";
-            } else {
-                savingsVal = results['gemini_3_flash'].finalCost - results['claude_haiku'].finalCost;
-                savingsText = `Note: Applied custom discounts have brought Claude 3 Haiku $${savingsVal.toFixed(2)} below Gemini 3 Flash.`;
-                document.getElementById('savingsAlert').className = "bg-slate-50 border border-slate-200 rounded-2xl p-5 shadow-sm flex items-center space-x-4 text-slate-700";
-            }
-            document.getElementById('savingsCalculated').innerText = formatMoney(savingsVal);
-            document.getElementById('savingsDescription').innerHTML = savingsText;
+            //let savingsText = '';
+            //let savingsVal = 0;
+            //if (results['claude_haiku'].finalCost > results['gemini_3_flash'].finalCost) {
+              //  savingsVal = results['claude_haiku'].finalCost - results['gemini_3_flash'].finalCost;
+                //savingsText = `Using <strong>Gemini 3 Flash</strong> over <strong>Claude 3 Haiku</strong> saves Fivetran <strong class="underline">${formatMoney(savingsVal)}</strong> monthly!`;
+                //document.getElementById('savingsAlert').className = "bg-emerald-50 border border-emerald-200 rounded-2xl p-5 shadow-sm flex items-center space-x-4";
+            //} else {
+              //  savingsVal = results['gemini_3_flash'].finalCost - results['claude_haiku'].finalCost;
+                //savingsText = `Note: Applied custom discounts have brought Claude 3 Haiku $${savingsVal.toFixed(2)} below Gemini 3 Flash.`;
+                //document.getElementById('savingsAlert').className = "bg-slate-50 border border-slate-200 rounded-2xl p-5 shadow-sm flex items-center space-x-4 text-slate-700";
+            //}
+            //document.getElementById('savingsCalculated').innerText = formatMoney(savingsVal);
+            //document.getElementById('savingsDescription').innerHTML = savingsText;
         }
 
         // Initialize immediately
