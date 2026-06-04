@@ -146,7 +146,7 @@
                     </div>
                     <div>
                         <label class="flex justify-between text-xs font-medium text-slate-600 mb-1">
-                            <span>Claude & Third-Party Discount</span>
+                            <span>Third-Party Discount</span>
                             <span class="text-anthropicOrange font-bold" id="anthropicDiscountVal">0%</span>
                         </label>
                         <input type="range" id="discountAnthropic" min="0" max="100" value="0" oninput="updateAnthropicSlider(this.value); calculate();" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-anthropicOrange">
@@ -200,8 +200,8 @@
                     <table class="min-w-full text-sm text-left border-collapse">
                         <thead class="bg-slate-100 text-slate-600 font-semibold text-xs uppercase tracking-wider">
                             <tr>
-                                <th class="px-4 py-3 rounded-l-lg text-center bg-blue-50/50 text-googleBlue font-bold" colspan="3">Google Gemini Stack</th>
-                                <th class="px-4 py-3 border-l border-slate-200 text-center bg-amber-50/50 text-anthropicOrange font-bold rounded-r-lg" colspan="3">Claude & Third-Party Stack</th>
+                                <th class="px-4 py-3 rounded-l-lg text-center bg-blue-50/50 text-googleBlue font-bold" colspan="3">Google Gemini Models</th>
+                                <th class="px-4 py-3 border-l border-slate-200 text-center bg-amber-50/50 text-anthropicOrange font-bold rounded-r-lg" colspan="3">Third-Party Models</th>
                             </tr>
                             <tr class="bg-slate-50 text-\[10px\] text-slate-500 border-t border-slate-200">
                                 <th class="px-4 py-2">Model & Plan</th>
@@ -225,7 +225,7 @@
                 <div class="bg-blue-50/50 border border-blue-100 rounded-2xl p-6 shadow-sm">
                     <div class="flex items-center space-x-2 text-googleBlue font-bold text-sm mb-4 uppercase tracking-wider">
                         <span class="w-2.5 h-2.5 rounded-full bg-googleBlue"></span>
-                        <span>Google Gemini Stack</span>
+                        <span>Google Gemini Models</span>
                     </div>
                     <div class="space-y-4">
                         <div class="flex justify-between items-end">
@@ -249,7 +249,7 @@
                 <div class="bg-amber-50/50 border border-amber-100 rounded-2xl p-6 shadow-sm">
                     <div class="flex items-center space-x-2 text-anthropicOrange font-bold text-sm mb-4 uppercase tracking-wider">
                         <span class="w-2.5 h-2.5 rounded-full bg-anthropicOrange"></span>
-                        <span>Claude & Competitor Stack</span>
+                        <span>Third Party Models</span>
                     </div>
                     <div class="space-y-4">
                         <div class="flex justify-between items-end">
@@ -265,7 +265,7 @@
                         <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
                             <div class="bg-anthropicOrange h-full rounded-full" id="anthropicRatioBar" style="width: 50%"></div>
                         </div>
-                        <p class="text-xs text-slate-500 italic font-medium">Claude & third-party models calculated purely on Pay-As-You-Go standard APIs.</p>
+                        <p class="text-xs text-slate-500 italic font-medium">Third-party models</p>
                     </div>
                 </div>
             </div>
