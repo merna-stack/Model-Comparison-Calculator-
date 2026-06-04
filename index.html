@@ -40,7 +40,7 @@
                     <span class="text-anthropicOrange">LLM Pricing Calculator</span>
                 </div>
                 <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">AI Model Monthly Pricing Calculator</h1>
-                <p class="text-sm text-slate-500 mt-1">A monthly comparative cost estimator mapping Google Gemini 3.x against Anthropic Claude workloads.</p>
+                <p class="text-sm text-slate-500 mt-1">A monthly comparative cost estimator mapping Google Gemini 3.x against Anthropic Claude & competitor workloads.</p>
             </div>
             <div class="mt-4 md:mt-0 flex flex-wrap gap-2">
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-googleBlue border border-blue-200">
@@ -149,7 +149,7 @@
 
                         <div>
                             <label class="flex justify-between text-xs font-medium text-slate-600 mb-1">
-                                <span>Anthropic (Claude) Discount</span>
+                                <span>Claude & Third-Party Discount</span>
                                 <span class="text-anthropicOrange font-bold" id="anthropicDiscountVal">0%</span>
                             </label>
                             <input type="range" id="discountAnthropic" min="0" max="100" value="0" oninput="updateAnthropicSlider(this.value); calculate();" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-anthropicOrange">
@@ -206,7 +206,7 @@
                             <thead class="bg-slate-100 text-slate-600 font-semibold text-xs uppercase tracking-wider">
                                 <tr>
                                     <th class="px-4 py-3 rounded-l-lg text-center bg-blue-50/50 text-googleBlue font-bold" colspan="3">Google Gemini Stack</th>
-                                    <th class="px-4 py-3 border-l border-slate-200 text-center bg-amber-50/50 text-anthropicOrange font-bold rounded-r-lg" colspan="3">Anthropic Claude Stack</th>
+                                    <th class="px-4 py-3 border-l border-slate-200 text-center bg-amber-50/50 text-anthropicOrange font-bold rounded-r-lg" colspan="3">Claude & Third-Party Stack</th>
                                 </tr>
                                 <tr class="bg-slate-50 text-\[10px\] text-slate-500 border-t border-slate-200">
                                     <th class="px-4 py-2">Model & Plan</th>
@@ -254,7 +254,7 @@
                     <div class="bg-amber-50/50 border border-amber-100 rounded-2xl p-6 shadow-sm">
                         <div class="flex items-center space-x-2 text-anthropicOrange font-bold text-sm mb-4 uppercase tracking-wider">
                             <span class="w-2.5 h-2.5 rounded-full bg-anthropicOrange"></span>
-                            <span>Anthropic Claude Stack</span>
+                            <span>Claude & Competitor Stack</span>
                         </div>
                         <div class="space-y-4">
                             <div class="flex justify-between items-end">
@@ -270,7 +270,7 @@
                             <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
                                 <div class="bg-anthropicOrange h-full rounded-full" id="anthropicRatioBar" style="width: 50%"></div>
                             </div>
-                            <p class="text-xs text-slate-500 italic font-medium">Claude models calculated purely on Pay-As-You-Go standard APIs.</p>
+                            <p class="text-xs text-slate-500 italic font-medium">Claude & third-party models calculated purely on Pay-As-You-Go standard APIs.</p>
                         </div>
                     </div>
                 </div>
@@ -294,6 +294,8 @@
                                     <option value="claude_sonnet">Claude 3.5 Sonnet</option>
                                     <option value="claude_4_6_sonnet">Claude 4.6 Sonnet</option>
                                     <option value="claude_haiku">Claude 3 Haiku</option>
+                                    <option value="deepseek_v4_pro">Deepseek V4 Pro</option>
+                                    <option value="qwen_3_7">Qwen 3.7</option>
                                 </select>
                             </div>
                         </div>
@@ -369,6 +371,20 @@
                 inputPrice: 0.25,
                 outputPrice: 1.25,
                 badgeColor: 'bg-orange-100 text-orange-800 border-orange-200'
+            },
+            'deepseek_v4_pro': {
+                name: 'Deepseek V4 Pro',
+                provider: 'deepseek',
+                inputPrice: 0.14,
+                outputPrice: 0.28,
+                badgeColor: 'bg-rose-100 text-rose-800 border-rose-200'
+            },
+            'qwen_3_7': {
+                name: 'Qwen 3.7',
+                provider: 'qwen',
+                inputPrice: 0.30,
+                outputPrice: 0.90,
+                badgeColor: 'bg-violet-100 text-violet-800 border-violet-200'
             }
         };
 
@@ -473,11 +489,13 @@
                 };
             }
 
-            // Generate Comparative Table HTML (Side-by-Side Gemini vs Claude)
+            // Generate Comparative Table HTML (Side-by-Side Gemini vs Claude/Competitors)
             const pairs = [
                 { geminiKey: 'gemini_3_flash', claudeKey: 'claude_haiku' },
                 { geminiKey: 'gemini_3_5_flash', claudeKey: 'claude_4_6_sonnet' },
-                { geminiKey: 'gemini_3_1_pro', claudeKey: 'claude_sonnet' }
+                { geminiKey: 'gemini_3_1_pro', claudeKey: 'claude_sonnet' },
+                { geminiKey: 'gemini_3_flash', claudeKey: 'deepseek_v4_pro' },
+                { geminiKey: 'gemini_3_1_pro', claudeKey: 'qwen_3_7' }
             ];
 
             let htmlTable = '';
@@ -509,7 +527,7 @@
                             <span class="text-\[9px\] text-slate-400 block font-normal">${googleDiscount}% discount</span>
                         </td>
 
-                        <!-- Claude Side (Separated by left border) -->
+                        <!-- Competitor Side (Separated by left border) -->
                         <td class="px-4 py-4 font-bold text-slate-900 border-l border-slate-200">
                             <div class="flex flex-col">
                                 <span>${cld.name}</span>
@@ -550,8 +568,8 @@
             const googleProPct = (results['gemini_3_1_pro'].finalCost / maxCost) * 100;
             const anthropicSonnetPct = (results['claude_sonnet'].finalCost / maxCost) * 100;
 
-            document.getElementById('googleRatioBar').style.width = Math.max(googleProPct, 5) + '%';
-            document.getElementById('anthropicRatioBar').style.width = Math.max(anthropicSonnetPct, 5) + '%';
+            document.getElementById('googleRatioBar').style.width = Math.max(googleProPct, 5) * 100 / 100 + '%';
+            document.getElementById('anthropicRatioBar').style.width = Math.max(anthropicSonnetPct, 5) * 100 / 100 + '%';
 
             // Savings analysis notification
             let savingsText = '';
