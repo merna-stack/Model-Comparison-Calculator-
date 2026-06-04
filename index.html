@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -41,7 +40,7 @@
                 <span class="text-anthropicOrange">LLM Pricing Calculator</span>
             </div>
             <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">AI Model Monthly Pricing Calculator</h1>
-            <p class="text-sm text-slate-500 mt-1">A monthly comparative cost estimator mapping Google Gemini 3.x against Anthropic Claude & competitor workloads.</p>
+            <p class="text-sm text-slate-500 mt-1">A monthly comparative cost estimator mapping Google Gemini (2.5 & 3.x) against Anthropic Claude & competitor workloads.</p>
         </div>
         <div class="mt-4 md:mt-0 flex flex-wrap gap-2">
             <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-googleBlue border border-blue-200">
@@ -100,7 +99,6 @@
                 <!-- Gemini Consumption Model Selection -->
                 <div class="border-t border-slate-100 pt-6 space-y-4">
                     <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Gemini Buying Model</h3>
-
                     <div class="grid grid-cols-2 gap-2">
                         <button id="btnPaygo" onclick="setGeminiModel('paygo')" class="py-2.5 px-3 rounded-lg text-xs font-bold border transition-all duration-200 text-center bg-googleBlue text-white border-googleBlue">
                             Pay-As-You-Go
@@ -139,7 +137,6 @@
                 <!-- Custom Discounts Section -->
                 <div class="border-t border-slate-100 pt-6 space-y-4">
                     <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Monthly Custom Discounts (%)</h3>
-
                     <div>
                         <label class="flex justify-between text-xs font-medium text-slate-600 mb-1">
                             <span>Google Cloud (Gemini) Discount</span>
@@ -147,7 +144,6 @@
                         </label>
                         <input type="range" id="discountGoogle" min="0" max="100" value="15" oninput="updateGoogleSlider(this.value); calculate();" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-googleBlue">
                     </div>
-
                     <div>
                         <label class="flex justify-between text-xs font-medium text-slate-600 mb-1">
                             <span>Claude & Third-Party Discount</span>
@@ -181,9 +177,8 @@
 
         <!-- RIGHT PANEL: DETAILED CALCULATIONS AND LIVE RESULTS -->
         <div class="lg:col-span-2 space-y-6">
-
             <!-- Dynamic Cost Callout (Savings Alert) -->
-          <!--  <div id="savingsAlert" class="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 shadow-sm flex items-center space-x-4">
+            <div id="savingsAlert" class="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 shadow-sm flex items-center space-x-4">
                 <div class="p-3 bg-emerald-500 rounded-xl text-white">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div>
@@ -193,7 +188,7 @@
                         Using Gemini 3 Flash over Claude 3 Haiku saves you <strong id="savingsCalculated">$0.00</strong> monthly!
                     </p>
                 </div>
-            </div> -->
+            </div>
 
             <!-- Live Model Comparison Matrix -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 overflow-hidden">
@@ -201,7 +196,6 @@
                     <h3 class="text-lg font-bold text-slate-900">Monthly Side-by-Side Analysis Matrix</h3>
                     <span class="text-xs text-slate-400 font-medium">Auto-calculates on change</span>
                 </div>
-
                 <div class="overflow-x-auto">
                     <table class="min-w-full text-sm text-left border-collapse">
                         <thead class="bg-slate-100 text-slate-600 font-semibold text-xs uppercase tracking-wider">
@@ -292,6 +286,8 @@
                                 <option value="gemini_3_flash">Gemini 3 Flash</option>
                                 <option value="gemini_3_5_flash">Gemini 3.5 Flash</option>
                                 <option value="gemini_3_1_pro" selected>Gemini 3.1 Pro</option>
+                                <option value="gemini_2_5_flash">Gemini 2.5 Flash</option>
+                                <option value="gemini_2_5_pro">Gemini 2.5 Pro</option>
                                 <option value="claude_sonnet">Claude 3.5 Sonnet</option>
                                 <option value="claude_4_6_sonnet">Claude 4.6 Sonnet</option>
                                 <option value="claude_haiku">Claude 3 Haiku</option>
@@ -300,7 +296,6 @@
                             </select>
                         </div>
                     </div>
-
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
                             <span class="text-\[10px\] uppercase font-bold text-slate-500 tracking-wider">Input Monthly Cost</span>
@@ -321,7 +316,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
@@ -351,6 +345,20 @@
             inputPrice: 2.00,
             outputPrice: 12.00,
             badgeColor: 'bg-blue-100 text-blue-800 border-blue-200'
+        },
+        'gemini_2_5_flash': {
+            name: 'Gemini 2.5 Flash',
+            provider: 'google',
+            inputPrice: 0.30,
+            outputPrice: 2.50,
+            badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-100'
+        },
+        'gemini_2_5_pro': {
+            name: 'Gemini 2.5 Pro',
+            provider: 'google',
+            inputPrice: 1.25,
+            outputPrice: 10.00,
+            badgeColor: 'bg-blue-50 text-blue-700 border-blue-100'
         },
         'claude_sonnet': {
             name: 'Claude 3.5 Sonnet',
@@ -420,10 +428,8 @@
         const inputTokens = parseFloat(document.getElementById('inputTokens').value) || 0;
         const outputTokens = parseFloat(document.getElementById('outputTokens').value) || 0;
         const requestVolume = parseFloat(document.getElementById('requestVolume').value) || 0;
-
         const googleDiscount = parseFloat(document.getElementById('discountGoogle').value) || 0;
         const anthropicDiscount = parseFloat(document.getElementById('discountAnthropic').value) || 0;
-
         const selectedSimKey = document.getElementById('selectedSimulatorModel').value;
 
         // Suggested GSU Estimation Engine
@@ -464,7 +470,6 @@
             let outputCost = 0;
             let baseTotal = 0;
             let finalCost = 0;
-
             const discountPct = model.provider === 'google' ? googleDiscount : anthropicDiscount;
 
             if (model.provider === 'google' && geminiMode === 'pt') {
@@ -493,10 +498,10 @@
         // Generate Comparative Table HTML (Side-by-Side Gemini vs Claude/Competitors without duplicate Gemini slots)
         const pairs = [
             { geminiKey: 'gemini_3_flash', claudeKey: 'claude_haiku' },
+            { geminiKey: 'gemini_2_5_flash', claudeKey: 'qwen_3_7' },
             { geminiKey: 'gemini_3_5_flash', claudeKey: 'claude_4_6_sonnet' },
-            { geminiKey: 'gemini_3_1_pro', claudeKey: 'claude_sonnet' },
-            { geminiKey: null, claudeKey: 'deepseek_v4_pro' },
-            { geminiKey: null, claudeKey: 'qwen_3_7' }
+            { geminiKey: 'gemini_2_5_pro', claudeKey: 'deepseek_v4_pro' },
+            { geminiKey: 'gemini_3_1_pro', claudeKey: 'claude_sonnet' }
         ];
 
         let htmlTable = '';
@@ -517,8 +522,8 @@
                     <td class="px-4 py-4 font-bold text-slate-900">
                         <div class="flex flex-col">
                             <span>${gem.name}</span>
-                            <span class="text-[10px] text-slate-500 font-normal mt-0.5">${gemPriceInfo}</span>
-                            <span class="text-[10px] text-slate-400 font-medium mt-0.5">${gemType}</span>
+                            <span class="text-\[10px\] text-slate-500 font-normal mt-0.5">${gemPriceInfo}</span>
+                            <span class="text-\[10px\] text-slate-400 font-medium mt-0.5">${gemType}</span>
                         </div>
                     </td>
                     <td class="px-4 py-4 text-right font-medium text-slate-500">
@@ -526,7 +531,7 @@
                     </td>
                     <td class="px-4 py-4 text-right font-extrabold text-googleBlue">
                         ${formatMoney(gemRes.finalCost)}
-                        <span class="text-[9px] text-slate-400 block font-normal">${googleDiscount}% discount</span>
+                        <span class="text-\[9px\] text-slate-400 block font-normal">${googleDiscount}% discount</span>
                     </td>
                 `;
             } else {
@@ -551,8 +556,8 @@
                     <td class="px-4 py-4 font-bold text-slate-900 border-l border-slate-200">
                         <div class="flex flex-col">
                             <span>${cld.name}</span>
-                            <span class="text-[10px] text-slate-500 font-normal mt-0.5">${cldPriceInfo}</span>
-                            <span class="text-[10px] text-slate-400 font-medium mt-0.5">${cldType}</span>
+                            <span class="text-\[10px\] text-slate-500 font-normal mt-0.5">${cldPriceInfo}</span>
+                            <span class="text-\[10px\] text-slate-400 font-medium mt-0.5">${cldType}</span>
                         </div>
                     </td>
                     <td class="px-4 py-4 text-right font-medium text-slate-500">
@@ -560,7 +565,7 @@
                     </td>
                     <td class="px-4 py-4 text-right font-extrabold text-anthropicOrange">
                         ${formatMoney(cldRes.finalCost)}
-                        <span class="text-[9px] text-slate-400 block font-normal">${anthropicDiscount}% discount</span>
+                        <span class="text-\[9px\] text-slate-400 block font-normal">${anthropicDiscount}% discount</span>
                     </td>
                 </tr>
             `;
@@ -599,10 +604,6 @@
             savingsVal = results['claude_haiku'].finalCost - results['gemini_3_flash'].finalCost;
             savingsText = `Using <strong>Gemini 3 Flash</strong> over <strong>Claude 3 Haiku</strong> saves Fivetran <strong class="underline">${formatMoney(savingsVal)}</strong> monthly!`;
             document.getElementById('savingsAlert').className = "bg-emerald-50 border border-emerald-200 rounded-2xl p-5 shadow-sm flex items-center space-x-4";
-        //} else {
-          //  savingsVal = results['gemini_3_flash'].finalCost - results['claude_haiku'].finalCost;
-           // savingsText = `Note: Applied custom discounts have brought Claude 3 Haiku $${savingsVal.toFixed(2)} below Gemini 3 Flash.`;
-           // document.getElementById('savingsAlert').className = "bg-slate-50 border border-slate-200 rounded-2xl p-5 shadow-sm flex items-center space-x-4 text-slate-700";
         }
         document.getElementById('savingsCalculated').innerText = formatMoney(savingsVal);
         document.getElementById('savingsDescription').innerHTML = savingsText;
