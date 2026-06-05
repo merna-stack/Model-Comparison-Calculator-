@@ -58,7 +58,7 @@
                 <!-- Workload Specs -->
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Average Input Tokens per Request</label>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Average Input Tokens</label>
                         <div class="relative rounded-md shadow-sm">
                             <input type="number" id="inputTokens" value="2000" oninput="calculate()" class="block w-full rounded-lg border-slate-200 pl-4 pr-16 py-2.5 focus:border-googleBlue focus:ring-googleBlue border text-slate-900 font-medium">
                             <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
@@ -68,7 +68,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Average Output Tokens per Request</label>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Average Output Tokens</label>
                         <div class="relative rounded-md shadow-sm">
                             <input type="number" id="outputTokens" value="800" oninput="calculate()" class="block w-full rounded-lg border-slate-200 pl-4 pr-16 py-2.5 focus:border-googleBlue focus:ring-googleBlue border text-slate-900 font-medium">
                             <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
@@ -85,6 +85,16 @@
                                 <span class="text-slate-400 text-sm font-semibold">req/mo</span>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Context Caching Slider -->
+                    <div>
+                        <label class="flex justify-between text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                            <span>Context Caching (%)</span>
+                            <span class="text-googleBlue font-bold" id="cachePctVal">0%</span>
+                        </label>
+                        <input type="range" id="contextCaching" min="0" max="100" value="0" oninput="updateCacheSlider(this.value); calculate();" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-googleBlue">
+                        <p class="text-[10px] text-slate-400 mt-1">Saves up to 75% on Gemini and 90% on Claude for cached input tokens.</p>
                     </div>
                 </div>
 
@@ -119,7 +129,7 @@
                         </div>
 
                         <div class="p-2.5 bg-blue-50/50 rounded-lg border border-blue-100">
-                            <span class="text-\[10px\] text-blue-700 font-bold uppercase tracking-wide block">Gemini GSU Recommendation</span>
+                            <span class="text-[10px] text-blue-700 font-bold uppercase tracking-wide block">Gemini GSU Recommendation</span>
                             <span class="text-xs text-slate-600 mt-1 block">
                                 Workload Peak: <strong id="recGeminiQps">0.00</strong> QPS. <br>
                                 Suggested GSUs: <strong id="recGeminiGsu">1 GSU</strong>.
@@ -158,7 +168,7 @@
                         </div>
 
                         <div class="p-2.5 bg-amber-50/50 rounded-lg border border-amber-100">
-                            <span class="text-\[10px\] text-amber-700 font-bold uppercase tracking-wide block">Claude GSU Recommendation</span>
+                            <span class="text-[10px] text-amber-700 font-bold uppercase tracking-wide block">Claude GSU Recommendation</span>
                             <span class="text-xs text-slate-600 mt-1 block">
                                 Workload Peak: <strong id="recClaudeQps">0.00</strong> QPS. <br>
                                 Suggested GSUs: <strong id="recClaudeGsu">1 GSU</strong>.
@@ -187,12 +197,9 @@
                 </div>
             </div>
 
-            
         </div>
-
         <!-- RIGHT PANEL: DETAILED CALCULATIONS AND LIVE RESULTS -->
         <div class="lg:col-span-2 space-y-6">
-           
 
             <!-- Live Model Comparison Matrix -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 overflow-hidden">
@@ -207,7 +214,7 @@
                                 <th class="px-4 py-3 rounded-l-lg text-center bg-blue-50/50 text-googleBlue font-bold" colspan="3">Google Gemini Models</th>
                                 <th class="px-4 py-3 border-l border-slate-200 text-center bg-amber-50/50 text-anthropicOrange font-bold rounded-r-lg" colspan="3">Third-Party Models</th>
                             </tr>
-                            <tr class="bg-slate-50 text-\[10px\] text-slate-500 border-t border-slate-200">
+                            <tr class="bg-slate-50 text-[10px] text-slate-500 border-t border-slate-200">
                                 <th class="px-4 py-2">Model & Plan</th>
                                 <th class="px-4 py-2 text-right">Standard</th>
                                 <th class="px-4 py-2 text-right text-googleBlue">Discounted</th>
@@ -223,7 +230,6 @@
                 </div>
             </div>
 
-            
             <!-- Interactive Selected Model Simulator Tool -->
             <div class="bg-slate-950 text-white rounded-2xl shadow-xl p-6 relative overflow-hidden">
                 <div class="absolute top-0 right-0 p-4 opacity-10">
@@ -252,19 +258,19 @@
                     </div>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                            <span class="text-\[10px\] uppercase font-bold text-slate-500 tracking-wider">Input Monthly Cost</span>
+                            <span class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Input Monthly Cost</span>
                             <div class="text-lg font-bold text-white mt-1" id="ledgerInputCost">$0.00</div>
                         </div>
                         <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                            <span class="text-\[10px\] uppercase font-bold text-slate-500 tracking-wider">Output Monthly Cost</span>
+                            <span class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Output Monthly Cost</span>
                             <div class="text-lg font-bold text-white mt-1" id="ledgerOutputCost">$0.00</div>
                         </div>
                         <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                            <span class="text-\[10px\] uppercase font-bold text-slate-500 tracking-wider">Base Cost / mo</span>
+                            <span class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Base Cost / mo</span>
                             <div class="text-lg font-bold text-white mt-1" id="ledgerSubtotal">$0.00</div>
                         </div>
                         <div class="bg-indigo-950 p-4 rounded-xl border border-indigo-900 relative">
-                            <span class="text-\[10px\] uppercase font-bold text-indigo-400 tracking-wider block">Discounted Cost / mo</span>
+                            <span class="text-[10px] uppercase font-bold text-indigo-400 tracking-wider block">Discounted Cost / mo</span>
                             <div class="text-xl font-black text-googleGreen mt-1" id="ledgerFinalCost">$0.00</div>
                         </div>
                     </div>
@@ -396,11 +402,16 @@
         document.getElementById('anthropicDiscountVal').innerText = val + '%';
     }
 
+    function updateCacheSlider(val) {
+        document.getElementById('cachePctVal').innerText = val + '%';
+    }
+
     function calculate() {
         // Read inputs
         const inputTokens = parseFloat(document.getElementById('inputTokens').value) || 0;
         const outputTokens = parseFloat(document.getElementById('outputTokens').value) || 0;
         const requestVolume = parseFloat(document.getElementById('requestVolume').value) || 0;
+        const cachePct = parseFloat(document.getElementById('contextCaching').value) || 0;
 
         const googleDiscount = parseFloat(document.getElementById('discountGoogle').value) || 0;
         const anthropicDiscount = parseFloat(document.getElementById('discountAnthropic').value) || 0;
@@ -414,7 +425,7 @@
 
         // Assume 1 GSU yields ~5,000 token/sec capacity as a baseline
         const suggestedGSU = Math.max(1, Math.ceil(totalTokensPerSec / 5000));
-        
+
         document.getElementById('recGeminiQps').innerText = qps.toFixed(2);
         document.getElementById('recGeminiGsu').innerText = suggestedGSU + " GSU" + (suggestedGSU > 1 ? "s" : "");
         document.getElementById('recClaudeQps').innerText = qps.toFixed(2);
@@ -473,7 +484,8 @@
                 // Split input/output 60/40 visually for ledger logic
                 inputCost = baseTotal * 0.6;
                 outputCost = baseTotal * 0.4;
-            } else if (model.provider === 'anthropic' && claudeMode === 'pt') {
+            } 
+            else if (model.provider === 'anthropic' && claudeMode === 'pt') {
                 // Provisioned Throughput billing model (using partner model PT specs)
                 baseTotal = totalClaudePtMonthlyCost;
                 finalCost = baseTotal * (1 - (discountPct / 100));
@@ -481,8 +493,16 @@
                 inputCost = baseTotal * 0.6;
                 outputCost = baseTotal * 0.4;
             } else {
-                // Pay-As-You-Go token model
-                inputCost = (totalInputTokens / 1000000) * model.inputPrice;
+                // Pay-As-You-Go token model with Context Caching adjustments
+                let effectiveInputPrice = model.inputPrice;
+                if (cachePct > 0) {
+                    let discountFactor = 0.75; // 75% savings for Gemini & general models
+                    if (model.provider === 'anthropic') {
+                        discountFactor = 0.90; // Claude Prompt Caching read-token rate yields 90% savings
+                    }
+                    effectiveInputPrice = model.inputPrice * (1 - discountFactor * (cachePct / 100));
+                }
+                inputCost = (totalInputTokens / 1000000) * effectiveInputPrice;
                 outputCost = (totalOutputTokens / 1000000) * model.outputPrice;
                 baseTotal = inputCost + outputCost;
                 finalCost = baseTotal * (1 - (discountPct / 100));
@@ -523,8 +543,8 @@
                     <td class="px-4 py-4 font-bold text-slate-900">
                         <div class="flex flex-col">
                             <span>${gem.name}</span>
-                            <span class="text-\[10px\] text-slate-500 font-normal mt-0.5">${gemPriceInfo}</span>
-                            <span class="text-\[10px\] text-slate-400 font-medium mt-0.5">${gemType}</span>
+                            <span class="text-[10px] text-slate-500 font-normal mt-0.5">${gemPriceInfo}</span>
+                            <span class="text-[10px] text-slate-400 font-medium mt-0.5">${gemType}</span>
                         </div>
                     </td>
                     <td class="px-4 py-4 text-right font-medium text-slate-500">
@@ -532,7 +552,7 @@
                     </td>
                     <td class="px-4 py-4 text-right font-extrabold text-googleBlue">
                         ${formatMoney(gemRes.finalCost)}
-                        <span class="text-\[9px\] text-slate-400 block font-normal">${googleDiscount}% discount</span>
+                        <span class="text-[9px] text-slate-400 block font-normal">${googleDiscount}% discount</span>
                     </td>
                 `;
             } else {
@@ -545,7 +565,7 @@
 
             const cld = models[pair.claudeKey];
             const cldRes = results[pair.claudeKey];
-            
+
             const isClaudePT = (cld.provider === 'anthropic' && claudeMode === 'pt');
             const cldType = isClaudePT 
                 ? `PT (${claudePtCommit === '1m' ? '1-Mo' : claudePtCommit === '3m' ? '3-Mo' : claudePtCommit === '6m' ? '6-Mo' : '12-Mo'} Commit)` 
@@ -563,8 +583,8 @@
                     <td class="px-4 py-4 font-bold text-slate-900 border-l border-slate-200">
                         <div class="flex flex-col">
                             <span>${cld.name}</span>
-                            <span class="text-\[10px\] text-slate-500 font-normal mt-0.5">${cldPriceInfo}</span>
-                            <span class="text-\[10px\] text-slate-400 font-medium mt-0.5">${cldType}</span>
+                            <span class="text-[10px] text-slate-500 font-normal mt-0.5">${cldPriceInfo}</span>
+                            <span class="text-[10px] text-slate-400 font-medium mt-0.5">${cldType}</span>
                         </div>
                     </td>
                     <td class="px-4 py-4 text-right font-medium text-slate-500">
@@ -572,7 +592,7 @@
                     </td>
                     <td class="px-4 py-4 text-right font-extrabold text-anthropicOrange">
                         ${formatMoney(cldRes.finalCost)}
-                        <span class="text-\[9px\] text-slate-400 block font-normal">${anthropicDiscount}% discount</span>
+                        <span class="text-[9px] text-slate-400 block font-normal">${anthropicDiscount}% discount</span>
                     </td>
                 </tr>
             `;
@@ -585,43 +605,11 @@
         document.getElementById('ledgerOutputCost').innerText = formatMoney(simRes.outputCost);
         document.getElementById('ledgerSubtotal').innerText = formatMoney(simRes.baseTotal);
         document.getElementById('ledgerFinalCost').innerText = formatMoney(simRes.finalCost);
-
-        // Update focused visualization blocks
-        document.getElementById('geminiProTotal').innerText = formatMoney(results['gemini_3_1_pro'].finalCost);
-        document.getElementById('geminiFlashTotal').innerText = formatMoney(results['gemini_3_flash'].finalCost);
-        document.getElementById('claudeSonnetTotal').innerText = formatMoney(results['claude_sonnet'].finalCost);
-        document.getElementById('claudeHaikuTotal').innerText = formatMoney(results['claude_haiku'].finalCost);
-
-        // Calculate dynamic ratios to display relative savings bar sizes
-        const maxCost = Math.max(
-            results['gemini_3_1_pro'].finalCost,
-            results['claude_sonnet'].finalCost
-        ) || 1;
-
-        const googleProPct = (results['gemini_3_1_pro'].finalCost / maxCost) * 100;
-        const anthropicSonnetPct = (results['claude_sonnet'].finalCost / maxCost) * 100;
-
-        document.getElementById('googleRatioBar').style.width = Math.max(googleProPct, 5) * 100 / 100 + '%';
-        document.getElementById('anthropicRatioBar').style.width = Math.max(anthropicSonnetPct, 5) * 100 / 100 + '%';
-
-        // Savings analysis notification
-        let savingsText = '';
-        let savingsVal = 0;
-        if (results['claude_haiku'].finalCost > results['gemini_3_flash'].finalCost) {
-            savingsVal = results['claude_haiku'].finalCost - results['gemini_3_flash'].finalCost;
-            savingsText = `Using <strong>Gemini 3 Flash</strong> over <strong>Claude 3 Haiku</strong> saves Fivetran <strong class="underline">${formatMoney(savingsVal)}</strong> monthly!`;
-            document.getElementById('savingsAlert').className = "bg-emerald-50 border border-emerald-200 rounded-2xl p-5 shadow-sm flex items-center space-x-4";
-        } else {
-            savingsVal = results['gemini_3_flash'].finalCost - results['claude_haiku'].finalCost;
-            savingsText = `Note: Applied custom discounts or Provisioned Throughput modes have changed the cost structure. Gemini 3 Flash is $${savingsVal.toFixed(2)} above Claude 3 Haiku.`;
-            document.getElementById('savingsAlert').className = "bg-slate-50 border border-slate-200 rounded-2xl p-5 shadow-sm flex items-center space-x-4 text-slate-700";
-        }
-        document.getElementById('savingsCalculated').innerText = formatMoney(savingsVal);
-        document.getElementById('savingsDescription').innerHTML = savingsText;
     }
 
     // Initialize immediately
     window.onload = function() {
+        updateCacheSlider(0);
         setGeminiModel('paygo');
         setClaudeModel('paygo');
     };
